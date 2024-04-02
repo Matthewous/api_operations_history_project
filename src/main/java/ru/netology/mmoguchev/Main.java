@@ -1,117 +1,64 @@
 package ru.netology.mmoguchev;
 
+
 import java.util.Scanner;
-import java.util.ArrayList;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-class Operation {
-    private double amount;
-    private Date date;
-    private String category;
-
-    public Operation(double amount, Date date, String category) {
-        this.amount = amount;
-        this.date = date;
-        this.category = category;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-}
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        ArrayList<Operation> transactions = new ArrayList<>();
+    // Предположим, что у нас есть список операций
+    static Operation[] operations = {
+            new Operation("2022-02-24",100,"Buy"),
+            new Operation("2022-03-13",100,"Buy"),
+            new Operation("2024-07-24",100,"Buy"),
+            new Operation("2024-08-09",100,"Buy"),
+            new Operation("2023-05-19",100,"Buy")
+    };
+    // Предположим, что у нас есть список клиентов
+    static Customer[] customers = {
+            new Customer("Mat","1234"),
+            new Customer("Tom","2456"),
+            new Customer("Steve","5432")
+    };
+    
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    public static void main(String[] args) {
+
+        // /Соответствие операциии клиенту
+        int[][] statement = new int[100][10];
+        statement[1][0] = 1; // Операция с ID = 1 является первой операцией клиента с ID 1
+        statement[1][1] = 2; // Операция с ID = 2 является второй операцией клиента с ID 1
+        statement[2][0] = 3; // Операция с ID = 3 является первой операцией клиента с ID 2
+        statement[3][0] = 4; // Операция с ID = 4 является первой операцией клиента с ID 3
+        statement[3][1] = 5; // Операция с ID = 5 является первой операцией клиента с ID 3
+
+        Scanner scanner = new Scanner(System.in);
 
         while (true) {
-
-            System.out.println("Options: \n1. Continue entering transactions\n2. Search transactions\n3. Exit");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            System.out.println("Выберите действие:");
+            System.out.println("1. Создать клиента");
+            System.out.println("2. Создать операцию");
+            System.out.println("3. Найти операции по датам");
+            System.out.println("4. Найти операции клиента");
+            System.out.println("5. Завершить работу");
+            int choice = Integer.parseInt(scanner.nextLine());
             if (choice == 1) {
-                System.out.println("Enter amount of transaction:");
-                double amount = scanner.nextDouble();
-                scanner.nextLine();
-
-                System.out.println("Enter date of transaction (dd/MM/yyyy):");
-                String dateString = scanner.nextLine();
-                Date date = null;
-                try {
-                    date = sdf.parse(dateString);
-                } catch (Exception e) {
-                    System.out.println("Invalid date format. Please enter date in format dd/MM/yyyy.");
-                    continue;
-                }
-
-                System.out.println("Enter category of transaction:");
-                String category = scanner.nextLine();
-
-                Operation newTransaction = new Operation(amount, date, category);
-                transactions.add(newTransaction);
+                Customer.createCustomerFromConsole();
             } else if (choice == 2) {
-                searchTransactions(transactions, scanner, sdf);
+                Operation.createOperationWithClientFromConsole(customers);
+
             } else if (choice == 3) {
-                for (Operation trans : transactions) {
-                    System.out.println("Your transactions:");
-                    System.out.println(STR."Amount: \{trans.getAmount()} Date: \{sdf.format(trans.getDate())} Category: \{trans.getCategory()}");
-                }
+                Operation.findOperationsByDateRange(operations);
+
+            } else if (choice == 4) {
+                Operation.findOperationsByClientID(statement,operations);
+
+            } else if (choice == 5) {
+                System.out.println("Работа завершена.");
                 break;
+            } else {
+                System.out.println("Неверный выбор. Пожалуйста, выберите снова.");
             }
         }
 
         scanner.close();
-    }
-
-    public static void searchTransactions(ArrayList<Operation> transactions, Scanner scanner, SimpleDateFormat sdf) {
-        System.out.println("Enter start date for search (dd/MM/yyyy):");
-        String startDateString = scanner.nextLine();
-        Date startDate = null;
-        try {
-            startDate = sdf.parse(startDateString);
-        } catch (Exception e) {
-            System.out.println("Invalid date format. Please enter date in format dd/MM/yyyy.");
-            return;
-        }
-
-        System.out.println("Enter end date for search (dd/MM/yyyy):");
-        String endDateString = scanner.nextLine();
-        Date endDate = null;
-        try {
-            endDate = sdf.parse(endDateString);
-        } catch (Exception e) {
-            System.out.println("Invalid date format. Please enter date in format dd/MM/yyyy.");
-            return;
-        }
-
-        for (Operation trans : transactions) {
-            if (trans.getDate().after(startDate) && trans.getDate().before(endDate)) {
-                System.out.println(STR."Amount: \{trans.getAmount()} Date: \{sdf.format(trans.getDate())} Category: \{trans.getCategory()}");
-            }
-        }
     }
 }
