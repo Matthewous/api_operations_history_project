@@ -1,7 +1,6 @@
 package ru.netology.mmoguchev;
 
 import java.util.Scanner;
-import java.util.Arrays;
 
 public class Operation {
     private static int nextId = 1;
@@ -21,8 +20,26 @@ public class Operation {
     }
 
     // Метод для ввода информации об операции из консоли и указания связанного клиента
-    public static int[] createOperationWithClientFromConsole(Customer[] customers) {
+    public static Operation createOperationWithClientFromConsole(Customer[] customers, Operation[] operations) {
         Scanner input = new Scanner(System.in);
+
+        System.out.print("Введите дату операции: ");
+        String date = input.next();
+
+        System.out.print("Введите сумму операции: ");
+        double amount = input.nextDouble();
+
+        System.out.print("Введите категорию операции: ");
+        String category = input.next();
+
+        Operation newOperation = new Operation(date, amount, category);
+
+        return newOperation;
+    }
+
+    public static int clientIdCheck(Customer[] customers) {
+        Scanner input = new Scanner(System.in);
+
 
         int final_client_id = -1; // Инициализация переменной final_client_id за пределами цикла
 
@@ -31,13 +48,18 @@ public class Operation {
             int client_id = input.nextInt();
             Customer client = null;
 
+            boolean check = false;
+
             for (Customer customer : customers) {
                 if (customer.getId() == client_id) {
                     client = customer;
                     final_client_id = client_id; // Присвоение значения final_client_id при нахождении клиента
+                    check = true;
                     break;
                 }
             }
+
+            if (check == true) break;
 
             if (client == null) {
                 System.out.println("Клиент с ID " + client_id + " не найден.");
@@ -51,38 +73,9 @@ public class Operation {
                     final_client_id = newCustomer.getId();
                     break;
                 }
-            } else {
-                break; // Выход из цикла, если клиент найден
             }
         }
-
-        System.out.print("Введите дату операции: ");
-        String date = input.next();
-
-        System.out.print("Введите сумму операции: ");
-        double amount = input.nextDouble();
-
-        System.out.print("Введите категорию операции: ");
-        String category = input.next();
-
-        Operation newOperation = new Operation(date, amount, category);
-
-        int[] result = new int[3];
-        result[0] = newOperation.getId();
-        result[1] = final_client_id; // Предполагая, что final_client_id - это ID клиента
-
-        return result;
-    }
-
-    public static void addOperation(Operation[] operations, Operation newOperation) {
-        // Создаем новый массив с увеличенной длиной
-        Operation[] newOperations = Arrays.copyOf(operations, operations.length + 1);
-
-        // Добавляем новую операцию в конец нового массива
-        newOperations[newOperations.length - 1] = newOperation;
-
-        // Обновляем ссылку на массив операций
-        operations = newOperations;
+        return final_client_id;
     }
 
     public static int countClientOperations(int[][] statement, int clientID) {
@@ -126,12 +119,11 @@ public class Operation {
 
         System.out.println(STR."Операции для клиента с ID \{clientId}:");
 
-        for (int j = 0; j < statement[clientId].length; j++) {
-            if (statement[clientId][j] > 0) {
-                for (Operation operation : operations) {
-                    if (operation.getId() == statement[clientId][j]) {
-                        System.out.println(STR."Дата: \{operation.getDate()}, Сумма: \{operation.getAmount()}, Категория: \{operation.getCategory()}");
-                    }
+        for (Operation operation : operations) {
+            for (int j = 0; j < statement[clientId].length; j++) {
+                if (operation.getId() == statement[clientId][j]) {
+                    System.out.println(STR."Дата: \{operation.getDate()}, Сумма: \{operation.getAmount()}, Категория: \{operation.getCategory()}");
+                    break;
                 }
             }
         }

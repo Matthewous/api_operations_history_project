@@ -1,6 +1,7 @@
 package ru.netology.mmoguchev;
 
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -41,17 +42,39 @@ public class Main {
             System.out.println("5. Завершить работу");
             int choice = Integer.parseInt(scanner.nextLine());
             if (choice == 1) {
-                Customer.createCustomerFromConsole();
+                Customer newCustomer = Customer.createCustomerFromConsole();
+
+                Customer[] newCustomers = Arrays.copyOf(customers, customers.length + 1);
+
+                // Добавляем новую операцию в конец нового массива
+                newCustomers[newCustomers.length - 1] = newCustomer;
+
+                // Обновляем ссылку на массив операций
+                customers = newCustomers;
+
+                System.out.print("Пользователь создан");
+
             } else if (choice == 2) {
-                int[] result = Operation.createOperationWithClientFromConsole(customers);
+                // Создаем новую операцию
+                Operation newOperation = Operation.createOperationWithClientFromConsole(customers, operations);
 
-                int operationId = result[0];
-                int clientId = result[1];
 
+                Operation[] newOperations = Arrays.copyOf(operations, operations.length + 1);
+
+                // Добавляем новую операцию в конец нового массива
+                newOperations[newOperations.length - 1] = newOperation;
+
+                // Обновляем ссылку на массив операций
+                operations = newOperations;
+
+                int clientId = Operation.clientIdCheck(customers);
+                // Считаем кол-во операций клиента в массиве
                 int customersOperationsCount = Operation.countClientOperations(statement,clientId);
-                System.out.println(STR."Кол-во операций клиента: \{customersOperationsCount}");
-                statement[clientId][customersOperationsCount] = operationId;
-                System.out.print("Создана операция");
+
+                // Добавляем связь операции и клиента
+                statement[clientId][customersOperationsCount] = newOperation.getId();
+
+                System.out.print("Операция создана");
 
             } else if (choice == 3) {
                 Operation.findOperationsByDateRange(operations);
