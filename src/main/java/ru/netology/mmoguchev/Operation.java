@@ -1,6 +1,7 @@
 package ru.netology.mmoguchev;
 
 import java.util.Scanner;
+import java.util.Arrays;
 
 public class Operation {
     private static int nextId = 1;
@@ -20,35 +21,38 @@ public class Operation {
     }
 
     // Метод для ввода информации об операции из консоли и указания связанного клиента
-    public static Operation createOperationWithClientFromConsole(Customer[] customers) {
+    public static int[] createOperationWithClientFromConsole(Customer[] customers) {
         Scanner input = new Scanner(System.in);
+
+        int final_client_id = -1; // Инициализация переменной final_client_id за пределами цикла
 
         while (true) {
             System.out.print("Введите ID клиента: ");
             int client_id = input.nextInt();
-            int new_client_id = 0;
-
             Customer client = null;
+
             for (Customer customer : customers) {
                 if (customer.getId() == client_id) {
                     client = customer;
+                    final_client_id = client_id; // Присвоение значения final_client_id при нахождении клиента
                     break;
                 }
             }
 
             if (client == null) {
-                System.out.println(STR."Клиент с ID \{client_id} не найден.");
-
+                System.out.println("Клиент с ID " + client_id + " не найден.");
                 System.out.println("1. Создать нового клиента.");
                 System.out.println("2. Изменить введенный ID.");
+
                 int choice = input.nextInt();
 
                 if (choice == 1) {
-                    int final_client_id = Customer.createCustomerFromConsole().getId();
+                    Customer newCustomer = Customer.createCustomerFromConsole();
+                    final_client_id = newCustomer.getId();
                     break;
                 }
             } else {
-                int final_client_id = client_id;
+                break; // Выход из цикла, если клиент найден
             }
         }
 
@@ -61,12 +65,40 @@ public class Operation {
         System.out.print("Введите категорию операции: ");
         String category = input.next();
 
-        Operation operation = new Operation(date,amount,category);
+        Operation newOperation = new Operation(date, amount, category);
 
-        // Дополнительные операции, если необходимо
-        System.out.print("Создана операция");
+        int[] result = new int[3];
+        result[0] = newOperation.getId();
+        result[1] = final_client_id; // Предполагая, что final_client_id - это ID клиента
 
-        return operation;
+        return result;
+    }
+
+    public static void addOperation(Operation[] operations, Operation newOperation) {
+        // Создаем новый массив с увеличенной длиной
+        Operation[] newOperations = Arrays.copyOf(operations, operations.length + 1);
+
+        // Добавляем новую операцию в конец нового массива
+        newOperations[newOperations.length - 1] = newOperation;
+
+        // Обновляем ссылку на массив операций
+        operations = newOperations;
+    }
+
+    public static int countClientOperations(int[][] statement, int clientID) {
+        int operationCount = 0;
+
+        for (int i = 0; i < statement.length; i++) {
+            if (i == clientID) {
+                for (int j = 0; j < statement[i].length; j++) {
+                    if (statement[i][j] != 0) { // Проверка, что операция присутствует (не равна 0)
+                        operationCount++;
+                    }
+                }
+            }
+        }
+
+        return operationCount;
     }
 
     public static void findOperationsByDateRange(Operation[] operations) {

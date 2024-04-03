@@ -43,7 +43,15 @@ public class Main {
             if (choice == 1) {
                 Customer.createCustomerFromConsole();
             } else if (choice == 2) {
-                Operation.createOperationWithClientFromConsole(customers);
+                int[] result = Operation.createOperationWithClientFromConsole(customers);
+
+                int operationId = result[0];
+                int clientId = result[1];
+
+                int customersOperationsCount = Operation.countClientOperations(statement,clientId);
+                System.out.println(STR."Кол-во операций клиента: \{customersOperationsCount}");
+                statement[clientId][customersOperationsCount] = operationId;
+                System.out.print("Создана операция");
 
             } else if (choice == 3) {
                 Operation.findOperationsByDateRange(operations);
